@@ -1,2 +1,7 @@
-*.zip filter=lfs diff=lfs merge=lfs -text
-ORBITA-QC-portable-Windows/runtime/node.exe filter=lfs diff=lfs merge=lfs -text
+* text=auto eol=lf
+*.sh text eol=lf
+Dockerfile text eol=lf
+*.yaml text eol=lf
+*.mjs text eol=lf
+*.png binary
+*.webp binary
