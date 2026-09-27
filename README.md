@@ -470,25 +470,20 @@ flowchart LR
 
 ```mermaid
 flowchart TB
-  subgraph Clients[Рабочие места]
-    Browser[React + TypeScript<br/>ОТК / мастер / технолог / руководитель / администратор]
-  end
-  Browser -->|HTTPS + cookie + CSRF| Web[Nginx<br/>TLS, лимиты, балансировка]
-  Web -->|HTTPS, проверка CA| A[API replica 1]
-  Web -->|HTTPS, проверка CA| B[API replica N]
-  subgraph Core[Сервер приложения]
-    A --> Policy[Контракты, RBAC, область линий<br/>серверная машина переходов]
-    B --> Policy
-    Policy --> Tx[Транзакция<br/>событие + аудит + команда + outbox]
-  end
-  Tx -->|TLS / AES-GCM| DB[(PostgreSQL<br/>факты, решения, сеансы,<br/>журнал, настройки, outbox)]
-  Policy -->|TLS / AES-GCM| Media[(Media PostgreSQL<br/>неизменяемые фотографии)]
-  DB --> Workers[Работники очереди<br/>SKIP LOCKED, lease, retry]
-  Workers --> Adapters[Адаптеры ERP / MES / CAD]
-  Adapters <-->|HTTPS + подтверждения| ERP[ERP-эмулятор<br/>или шлюз 1С / Галактика]
-  Sources[CV, MES, журналы станков,<br/>мобильный инспекционный источник] -->|Версионированные сообщения| Policy
-  Secrets[Отдельные секреты / keyring] -.-> Core
-  DB --> Backup[Зашифрованная копия<br/>проверка восстановления]
+  Browser["Ролевые рабочие места: React"] --> Web["Nginx: HTTPS и балансировка"]
+  Web --> API1["API replica 1"]
+  Web --> API2["API replica N"]
+  API1 --> Policy["Контракты, RBAC и переходы"]
+  API2 --> Policy
+  Sources["CV, MES, станки и MobileOps"] --> Policy
+  Secrets["Секреты и keyring"] -.-> Policy
+  Policy --> DB["PostgreSQL: события, решения, аудит и outbox"]
+  Policy --> Media["Media PostgreSQL: фотографии"]
+  DB --> Workers["Очередь доставки: lease и retry"]
+  Workers --> Adapters["Адаптеры ERP, MES и CAD"]
+  Adapters --> ERP["ERP-эмулятор или шлюз предприятия"]
+  ERP --> Adapters
+  DB --> Backup["Зашифрованная копия и проверка восстановления"]
   Media --> Backup
 ```
 
